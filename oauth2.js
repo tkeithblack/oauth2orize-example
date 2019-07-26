@@ -8,8 +8,10 @@ module.exports = function (app) {
     models = require('./models');
   
   function ensureLoggedIn() {
+console.log("In ensureLoggedIn");
     return function (req, res, next) {
       if (!req.session.user || !req.session.user.id) {
+console.log("redirect('/login')");
         return res.redirect('/login');
       }
       next();
@@ -79,6 +81,7 @@ module.exports = function (app) {
 
   passport.use(new BasicStrategy(
     function (username, password, done) {
+console.log("In BasicStrategy");
       models.Client.findById(username, function (err, client) {
         if (err) return done(err);
         if (!client) return done(null, false);
@@ -90,6 +93,7 @@ module.exports = function (app) {
 
   passport.use(new ClientPasswordStrategy(
     function(clientId, clientSecret, done) {
+console.log("In ClientPasswordStrategy");
       models.Client.findById(clientId, function (err, client) {
         if (err) return done(err);
         if (!client) return done(null, false);
@@ -101,6 +105,7 @@ module.exports = function (app) {
 
   passport.use(new BearerStrategy(
     function (accessToken, done) {
+console.log("In BearerStrategy");
       models.AccessToken.findOne({oauth_token: accessToken}, function (err, token) {
         if (err) return done(err);
         if (!token) return done(null, false);
@@ -125,6 +130,7 @@ module.exports = function (app) {
   app.get('/authorize',
     ensureLoggedIn(),
     oauth2.authorization(function (clientID, redirectURI, done) {
+console.log("In authorization(function(...)");
       models.Client.findById(clientID, function (err, client) {
         if (err) return done(err);
         if (!client) return done(null, false);
@@ -133,11 +139,13 @@ module.exports = function (app) {
       });
     }),
     function (req, res) {
+console.log("In /authorize post function.");
       res.json({
         transactionID: req.oauth2.transactionID,
         user: req.user,
         client: req.oauth2.client
       })
+console.log("In /authorize after post function.");
       // res.render('dialog', {
       //   transactionID: req.oauth2.transactionID,
       //   user: req.user,

@@ -1,5 +1,6 @@
 var express = require('express'),
-  passport = require('passport');
+  passport = require('passport'),
+  models = require('./models.js');
 
 // Init app
 var app = module.exports = express();
@@ -30,6 +31,16 @@ var oauth2 = require('./oauth2')(app);
 
 // Routes
 var routes = require('./routes')(app);
+
+
+app.get('/login', function(req, res) {
+  console.log("Get /login");
+  console.log("req.body");
+  console.log(req.body);
+  console.log("req.query");
+  console.log(req.query);
+  routes.login;
+});
 
 app.post('/login', routes.login);
 app.post('/logout', routes.logout);
